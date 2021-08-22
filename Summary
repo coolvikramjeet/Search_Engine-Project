@@ -1,1 +1,46 @@
+The aim of the Project is to build a prototype of unigram text search engine which works on JSON database and retrives topmost page based on input query.
 
+This project is unlike exact balue search in DBMS where we have to write exact query.
+
+for ex-> some one search Vikram then it will look into all the pages of database and prints the page which contains maximum number of Vikram.
+
+Main challenge was parse database into main memory, for thet purpose I have used JSON parser
+
+JSON parser has SAX handler class which acr as interface
+
+Interface have methods and variables, but methods declared in interface are by default abstract (i.i a;; methods are virtual(no body))
+
+I have overridden few methods in SAX handler.
+                     methods (key, string, end)
+
+And rest of methods have been left as it is attributes of students(Name, age, about, Id) all attributes are initialised to false
+
+whenever program encounters particular attribute than makes it true.
+Key methods has been overridden for this purpose.
+
+An end object has been overridden to indicate particular page has been fully traversed. So we push that object into student set.
+here all information present in JSON database has been parsed into main memory.
+
+All objects(i.e pages) are stored in set.
+
+Now we traverse each object in set & do text preprocessing which include tokenization, sentence segmentation, case folding, removing stopwords and stemming.
+
+After text preprocessing, we count number of times particular word occurs in name and about section.
+
+This count is stored in a map which is named as object detail.
+          key       name count      about count
+s1        cpp           0               20
+s2        cpp           1                5
+s3        cpp           5               10
+
+We have dine this counting to calculate term frequency.
+Term frequency:- It is numerical statistics that is intended to reflect how important is a word to particular document.
+
+We assign more weightage to name section & less weightage to about section      key-> {1,5} weigh->{100,30}
+for each category we assign some weight (term frequency =  1+log(total weight)), here log is taken to avoid dealing with big numbers.
+This is for sibgle word search, But sometime user might search two words i.e. "the cpp", here "the" is frequently occuring term so here tf(the) > tf(cpp)
+here "the" gains more weightage compared to "cpp" which is  wrong, so we assign lwss weightage to frequently occuring word.
+
+After calculating term frequency we do inverted indexing. Inverted indexing contains all the unique woed and list of pages in which it appeared.
+
+To achieve this, create a sorted list of all unique terms and for all words we maintain a lot of document in which it is present
